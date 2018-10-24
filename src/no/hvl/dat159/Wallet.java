@@ -13,7 +13,7 @@ public class Wallet {
     //A refererence to the "global" complete utxo-set
     private Map<Input, Output> utxoMap;
     
-    private long result = 0;
+    private long balance = 0;
     
     public Wallet(String id, UTXO utxo) {
         keyPair = DSAUtil.generateRandomDSAKeyPair();
@@ -23,11 +23,7 @@ public class Wallet {
     }
 
     public String getAddress() {
-    	return id;
-    }
-
-    public PublicKey getPublicKey() {
-        return keyPair.getPublic();
+    	return HashUtil.addressFromPublicKey(keyPair.getPublic());
     }
 
     public Transaction createTransaction(long value, String address) throws Exception {
@@ -35,8 +31,13 @@ public class Wallet {
         //TODO - This is a big one
         
         // 1. Collect all UTXO for this wallet and calculate balance
+    	Map<Input, Output> myUTXO = collectMyUtxo();
+    	long myBalance = calculateBalance(myUTXO.values());
         // 2. Check if there are sufficient funds --- Exception?
+    	if(myBalance < value) System.out.println("Poor man is poor");
+  
         // 3. Choose a number of UTXO to be spent --- Strategy?
+    	
         // 4. Calculate change
         // 5. Create an "empty" transaction
     	Transaction tx = new Transaction(keyPair.getPublic());
@@ -61,14 +62,14 @@ public class Wallet {
     }
 
     public long getBalance() {
-        return result;
+        return balance;
     }
         
     private long calculateBalance(Collection<Output> outputs) {
     	outputs.forEach((output) -> {
-        	result = result + output.getValue();
+        	balance = balance + output.getValue();
         });
-        return result;
+        return balance;
     }
 
     private Map<Input, Output> collectMyUtxo() {

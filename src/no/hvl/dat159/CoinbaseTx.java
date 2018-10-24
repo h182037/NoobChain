@@ -9,10 +9,10 @@ public class CoinbaseTx {
 	private String txHash;
 
 	public CoinbaseTx(String coinbase, int value, String address) {
-	    this.setCoinbase(coinbase);
-	    output.setAddress(address);
+		this.coinbase = coinbase;
+		output.setAddress(address);
 	    output.setValue(value);
-	    setTxHash(new String(HashUtil.sha256Hash(address)));
+	    this.txHash = HashUtil.base64Encode(HashUtil.sha256Hash(coinbase + value));
 	}
 	
 	@Override
@@ -25,17 +25,10 @@ public class CoinbaseTx {
 		return coinbase;
 	}
 
-	public void setCoinbase(String coinbase) {
-		this.coinbase = coinbase;
-	}
-
 	public String getTxHash() {
 		return txHash;
 	}
 
-	public void setTxHash(String txHash) {
-		this.txHash = txHash;
-	}
 	public Output getOutput() {
 		return output;
 	}

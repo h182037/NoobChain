@@ -4,6 +4,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Transaction {
 
@@ -18,7 +19,7 @@ public class Transaction {
 	private PublicKey senderPublicKey;
 	private byte[] signature;
 	
-	private String txHash;
+	private String txHash = "";
 	
 	public Transaction(PublicKey senderPublicKey) {
 		this.setSenderPublicKey(senderPublicKey);
@@ -48,16 +49,22 @@ public class Transaction {
 	}
 
 	public void signTxUsing(PrivateKey privateKey) {
-		signature = DSAUtil.signWithDSA(privateKey, txHash);
+		signature = DSAUtil.signWithDSA(privateKey, inputToString() + outputToString());
 	}
 
 	public void calculateTxHash() {
-		txHash = new String(HashUtil.sha256Hash(txHash));
+		txHash = HashUtil.base64Encode(HashUtil.sha256Hash(inputToString() + outputToString()));
 	}
 	
 	public boolean isValid() {
 	    //TODO Complete validation of the transaction. Called by the Application.
 	    return true;
+	}
+	public String inputToString() {
+		return inputs.stream().map(Input::toString).collect(Collectors.joining("n\t\t"));
+	}
+	public String outputToString() {
+		return outputs.stream().map(Output::toString).collect(Collectors.joining("n\t\t"));
 	}
 
 	public PublicKey getSenderPublicKey() {
