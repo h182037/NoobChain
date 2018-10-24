@@ -30,13 +30,16 @@ public class Application {
         //    amount to the "miner"'s address. Update the UTXO-set (add only).
        CoinbaseTx faucetTx = new CoinbaseTx("It is not the man who has too little, but the man who craves more, that is poor", 100, miner.getAddress()); 
        utxo.addOutputFrom(faucetTx);
+       System.out.println("Block 1:");
        
 	
 		
         // 2. The second "block" contains two transactions, the mandatory coinbase
         //    transaction and a regular transaction. The regular transaction shall
         //    send ~20% of the money from the "miner"'s address to the other address.
-        
+       CoinbaseTx coinbaseTx = new CoinbaseTx("Time is money, friend", 100, miner.getAddress());
+       utxo.addOutputFrom(coinbaseTx);
+       
         //    Validate the regular transaction created by the "miner"'s wallet:
         //      - All the content must be valid (not null++)!!!
         //      - All the inputs are unspent and belongs to the sender
@@ -45,20 +48,30 @@ public class Application {
         //      - The sum of inputs equals the sum of outputs
         //      - The transaction is correctly signed by the sender
         //      - The transaction hash is correct
-        
-        //    Update the UTXO-set (both add and remove).
-        
        
+       Transaction regTx = miner.createTransaction((miner.getBalance()/5), person.getAddress());
+        	//    Update the UTXO-set (both add and remove).
+        	
+       if(!regTx.isValid()) System.out.println("Bad coder is bad, transaction is not good, no");
        
+       utxo.addAndRemoveOutputsFrom(regTx);
+       System.out.println("Block 2: ");
        
         // 3. Do the same once more. Now, the "miner"'s address should have two or more
         //    unspent outputs (depending on the strategy for choosing inputs) with a
         //    total of 2.6 * block reward, and the other address should have 0.4 ...
         
+       coinbaseTx = new CoinbaseTx("The WTF/minute is a measure of success", 100, miner.getAddress());
+       utxo.addOutputFrom(coinbaseTx);
+       
+       regTx = miner.createTransaction(miner.getBalance()/5, person.getAddress());
+       
+       
         //    Validate the regular transaction ...
+       if(!regTx.isValid()) System.out.println("You done goofed, transaction is angry");
         
         //    Update the UTXO-set ...
-	    
+       utxo.addAndRemoveOutputsFrom(regTx);
         // 4. Make a nice print-out of all that has happened, as well as the end status.
         //
         //      for each of the "block"s (rounds), print
@@ -73,5 +86,6 @@ public class Application {
         //      End status: the set of unspent outputs
         //      End status: for each of the wallets, print
         //          wallet id, address, balance
+       
 	}
 }

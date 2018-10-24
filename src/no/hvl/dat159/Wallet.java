@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Map;
 
 public class Wallet {
@@ -82,19 +83,19 @@ public class Wallet {
         
     private long calculateBalance(Collection<Output> outputs) {
     	outputs.forEach((output) -> {
-        	balance = balance + output.getValue();
+        	balance += output.getValue();
         });
         return balance;
     }
-
     private Map<Input, Output> collectMyUtxo() {
-    	Map<Input, Output> collected = null;
-    	utxoMap.forEach((input, output) -> {
-    		if(output.getAddress() == this.getAddress()) {
-    			collected.put(input, output);
+    	Map<Input, Output> collected = utxoMap;
+    	
+    	for(Map.Entry<Input, Output> entry : collected.entrySet()) {
+    		if(entry.getValue().getAddress()!=HashUtil.addressFromPublicKey(keyPair.getPublic())) {
+    			collected.remove(entry.getKey());
     		}
-    	});
+    	}
         return collected;
+    
     }
-
 }

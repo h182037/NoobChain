@@ -10,8 +10,7 @@ public class CoinbaseTx {
 
 	public CoinbaseTx(String coinbase, int value, String address) {
 		this.coinbase = coinbase;
-		output.setAddress(address);
-	    output.setValue(value);
+		output = new Output(value, address);
 	    this.txHash = HashUtil.base64Encode(HashUtil.sha256Hash(coinbase + value));
 	}
 	
