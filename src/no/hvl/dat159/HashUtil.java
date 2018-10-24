@@ -14,7 +14,7 @@ public class HashUtil {
 		byte[] hash = sha256Hash(pkBytes);
 		return DatatypeConverter.printBase64Binary(hash);
 	}
-
+ 
 	public static byte[] sha256Hash(String s) {
 		try {
 			return sha256Hash(s.getBytes("UTF-8"));
@@ -37,7 +37,7 @@ public class HashUtil {
 	}
 
 	public static byte[] base64Decode(String s) {
-		return DatatypeConverter.parseBase64Binary(s);
+		return DatatypeConverter.parseBase64Binary(s); 
 	}
 
 }

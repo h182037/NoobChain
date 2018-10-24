@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Map;
 
@@ -14,18 +15,18 @@ public class Wallet {
     private long newTxOutputs;
     //A refererence to the "global" complete utxo-set
     private Map<Input, Output> utxoMap;
-    
+    private String address;
     private long balance = 0;
     
     public Wallet(String id, UTXO utxo) {
         keyPair = DSAUtil.generateRandomDSAKeyPair();
-        this.id = id;
+        this.setId(id);
         this.utxoMap = utxo.getMap();
-        
+        this.address = HashUtil.addressFromPublicKey(keyPair.getPublic());
     }
 
     public String getAddress() {
-    	return HashUtil.addressFromPublicKey(keyPair.getPublic());
+    	return address;
     }
 
     public Transaction createTransaction(long value, String address) throws Exception {
@@ -90,12 +91,22 @@ public class Wallet {
     private Map<Input, Output> collectMyUtxo() {
     	Map<Input, Output> collected = utxoMap;
     	
-    	for(Map.Entry<Input, Output> entry : collected.entrySet()) {
+    	Iterator<Map.Entry<Input, Output>> it = collected.entrySet().iterator();
+    	while(it.hasNext()) {
+    		Map.Entry<Input, Output> entry = it.next();
     		if(entry.getValue().getAddress()!=HashUtil.addressFromPublicKey(keyPair.getPublic())) {
     			collected.remove(entry.getKey());
     		}
     	}
         return collected;
-    
+     
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

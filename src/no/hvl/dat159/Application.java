@@ -16,7 +16,7 @@ public class Application {
          * 
          * (If you want to, you can of course extend the assignment by collecting the
          * individual transactions into blocks, create a Merkle tree for the block
-         * header, validate, mine and add the block to a blockchain.)
+         * header, validate, mine  and add the block to a blockchain.)
          * 
          */
 

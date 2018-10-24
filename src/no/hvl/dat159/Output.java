@@ -10,7 +10,7 @@ public class Output {
 	    this.setValue(value);
 	    this.setAddress(address);
 	}
-
+ 
 	@Override
 	public String toString() {
         //TODO For screen output
