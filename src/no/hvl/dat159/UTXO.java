@@ -31,6 +31,9 @@ public class UTXO {
     	}
     	tx.setOutputs(outputs);
     }
-
+    
+    public Map<Input, Output> getMap(){
+    	return map;
+    }
     //TODO Getters?
 }

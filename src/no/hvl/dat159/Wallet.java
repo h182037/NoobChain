@@ -12,19 +12,22 @@ public class Wallet {
     
     //A refererence to the "global" complete utxo-set
     private Map<Input, Output> utxoMap;
-
+    
+    private long result = 0;
+    
     public Wallet(String id, UTXO utxo) {
-        //TODO
+        keyPair = DSAUtil.generateRandomDSAKeyPair();
+        this.id = id;
+        this.utxoMap = utxo.getMap();
+        
     }
 
     public String getAddress() {
-    	
     	return id;
     }
 
     public PublicKey getPublicKey() {
-        //TODO
-        return null;
+        return keyPair.getPublic();
     }
 
     public Transaction createTransaction(long value, String address) throws Exception {
@@ -54,23 +57,28 @@ public class Wallet {
 
     @Override
     public String toString() {
-        //TODO
         return null;
     }
 
     public long getBalance() {
-        //TODO
-        return 0;
+        return result;
     }
         
     private long calculateBalance(Collection<Output> outputs) {
-        //TODO
-        return 0;
+    	outputs.forEach((output) -> {
+        	result = result + output.getValue();
+        });
+        return result;
     }
 
     private Map<Input, Output> collectMyUtxo() {
-    	
-        return null;
+    	Map<Input, Output> collected = null;
+    	utxoMap.forEach((input, output) -> {
+    		if(output.getAddress() == this.getAddress()) {
+    			collected.put(input, output);
+    		}
+    	});
+        return collected;
     }
 
 }
