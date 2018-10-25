@@ -7,14 +7,14 @@ public class Output {
 	private String address;
 	
 	public Output(long value, String address) {
-	    this.setValue(value);
-	    this.setAddress(address);
+	    setValue(value);
+	    setAddress(address);
 	}
  
 	@Override
 	public String toString() {
-        //TODO For screen output
-        return "";
+        
+        return "\t"+"address: "+address+"\n"+"        value: "+value;
 	}
 
 	public long getValue() {

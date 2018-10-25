@@ -4,6 +4,8 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Map;
@@ -16,13 +18,17 @@ public class Wallet {
     //A refererence to the "global" complete utxo-set
     private Map<Input, Output> utxoMap;
     private String address;
-    private long balance = 0;
     
     public Wallet(String id, UTXO utxo) {
         keyPair = DSAUtil.generateRandomDSAKeyPair();
         this.setId(id);
         this.utxoMap = utxo.getMap();
         this.address = HashUtil.addressFromPublicKey(keyPair.getPublic());
+    }
+    @Override
+    public String toString() {
+    	
+        return "\t"+ "id: "+getId()+"\n\t"+"address: "+getAddress()+"\n\t"+"balance: "+calculateBalance(collectMyUtxo().values());
     }
 
     public String getAddress() {
@@ -55,9 +61,9 @@ public class Wallet {
         // 5. Create an "empty" transaction
     	Transaction tx = new Transaction(keyPair.getPublic());
         // 6. Add chosen inputs
-    	chosenTxs.forEach((input)-> {
-    		tx.addInput(input);
-    	});
+    	for (Input i : chosenTxs) {
+    		tx.addInput(i);
+    	}
         // 7. Add 1 or 2 outputs, depending on change
     	tx.addOutput(new Output(value, address));
     	if(change > 0) tx.addOutput(new Output(change, getAddress()));
@@ -73,29 +79,23 @@ public class Wallet {
         // Do that manually from the Application-main.
     }
 
-    @Override
-    public String toString() {
-        return null;
-    }
+    
 
-    public long getBalance() {
-        return balance;
-    }
         
-    private long calculateBalance(Collection<Output> outputs) {
-    	outputs.forEach((output) -> {
-        	balance += output.getValue();
-        });
+    public long calculateBalance(Collection<Output> outputs) {
+    	long balance = 0;
+    	for (Output o : outputs) {
+    		balance += o.getValue();
+    	}
         return balance;
     }
+    
     private Map<Input, Output> collectMyUtxo() {
-    	Map<Input, Output> collected = utxoMap;
+    	Map<Input, Output> collected = new HashMap<Input, Output>();
     	
-    	Iterator<Map.Entry<Input, Output>> it = collected.entrySet().iterator();
-    	while(it.hasNext()) {
-    		Map.Entry<Input, Output> entry = it.next();
-    		if(entry.getValue().getAddress()!=HashUtil.addressFromPublicKey(keyPair.getPublic())) {
-    			collected.remove(entry.getKey());
+    	for(Entry<Input, Output> o : utxoMap.entrySet()) {
+    		if(o.getValue().getAddress()==HashUtil.addressFromPublicKey(keyPair.getPublic())) {
+    			collected.put(o.getKey(), o.getValue());
     		}
     	}
         return collected;

@@ -23,23 +23,34 @@ public class Application {
         // 0. To get started, we need a few (single address) Wallets. Create 2 wallets.
         //    Think of one of them as the "miner" (the one collecting "block rewards").
 		Wallet person = new Wallet("0x8PAFFEN", utxo);
+		System.out.println("Created wallet 1: "+"\n"+person.toString()+"\n");
 		Wallet miner = new Wallet("0x8MAFFEN", utxo);
+		System.out.println("Created wallet 2: "+"\n"+miner.toString()+"\n");
+
 		
         // 1. The first "block" (= round of transactions) contains only a coinbase
         //    transaction. Create a coinbase transaction that adds a certain
         //    amount to the "miner"'s address. Update the UTXO-set (add only).
-       CoinbaseTx faucetTx = new CoinbaseTx("It is not the man who has too little, but the man who craves more, that is poor", 100, miner.getAddress()); 
-       utxo.addOutputFrom(faucetTx);
-       System.out.println("Block 1:");
-       
+		System.out.println("Block 1:");
+		CoinbaseTx faucetTx = new CoinbaseTx("Joke... is funny", 100, miner.getAddress()); 
+		System.out.println("Created Coinbase Transaction 1: "+"\n"+faucetTx.toString());
+		utxo.addOutputFrom(faucetTx);
+		System.out.println("Block UTXO end status:");
+		utxo.printUTXO();
+		System.out.println("Block Wallet end status: ");
+		System.out.println("Wallet 1: "+"\n"+person.toString()+"\n");
+		System.out.println("Wallet 2: "+"\n"+miner.toString()+"\n");
+
 	
 		
         // 2. The second "block" contains two transactions, the mandatory coinbase
         //    transaction and a regular transaction. The regular transaction shall
         //    send ~20% of the money from the "miner"'s address to the other address.
-       CoinbaseTx coinbaseTx = new CoinbaseTx("Time is money, friend", 100, miner.getAddress());
+	   System.out.println("\n"+"Block 2: ");
+       CoinbaseTx coinbaseTx = new CoinbaseTx("Time is money, friend", 100, person.getAddress());
+       System.out.println("Created Coinbase Transaction 2: "+"\n"+coinbaseTx.toString());
        utxo.addOutputFrom(coinbaseTx);
-       
+
         //    Validate the regular transaction created by the "miner"'s wallet:
         //      - All the content must be valid (not null++)!!!
         //      - All the inputs are unspent and belongs to the sender
@@ -49,13 +60,17 @@ public class Application {
         //      - The transaction is correctly signed by the sender
         //      - The transaction hash is correct
        
-       Transaction regTx = miner.createTransaction((miner.getBalance()/5), person.getAddress());
+       Transaction regTx = miner.createTransaction(miner.calculateBalance(utxo.getMap().values())/5, person.getAddress());
         	//    Update the UTXO-set (both add and remove).
-        	
        if(!regTx.isValid()) System.out.println("Bad coder is bad, transaction is not good, no");
        
        utxo.addAndRemoveOutputsFrom(regTx);
-       System.out.println("Block 2: ");
+       System.out.println("Block UTXO end status:");
+       utxo.printUTXO();
+       System.out.println("Block Wallet end status: ");
+       System.out.println("Wallet 1: "+"\n"+person.toString()+"\n");
+       System.out.println("Wallet 2: "+"\n"+miner.toString()+"\n");
+       
        
         // 3. Do the same once more. Now, the "miner"'s address should have two or more
         //    unspent outputs (depending on the strategy for choosing inputs) with a
@@ -64,7 +79,7 @@ public class Application {
        coinbaseTx = new CoinbaseTx("The WTF/minute is a measure of success", 100, miner.getAddress());
        utxo.addOutputFrom(coinbaseTx);
        
-       regTx = miner.createTransaction(miner.getBalance()/5, person.getAddress());
+       regTx = miner.createTransaction((miner.calculateBalance(utxo.getMap().values())/5), person.getAddress());
        
        
         //    Validate the regular transaction ...
@@ -86,6 +101,7 @@ public class Application {
         //      End status: the set of unspent outputs
         //      End status: for each of the wallets, print
         //          wallet id, address, balance
+       
        
 	}
 }

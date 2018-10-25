@@ -16,8 +16,7 @@ public class CoinbaseTx {
 	
 	@Override
 	public String toString() {
-	    //TODO For screen output
-	    return "";
+	    return "        message: "+getCoinbase()+"\n"+"        output: "+getOutput().getAddress()+"\n"+"        hash: "+getTxHash();
 	}
 
 	public String getCoinbase() {

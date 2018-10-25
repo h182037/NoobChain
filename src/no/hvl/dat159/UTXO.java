@@ -3,6 +3,7 @@ package no.hvl.dat159;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class UTXO {
     
@@ -14,7 +15,9 @@ public class UTXO {
 	private Map<Input, Output> map = new HashMap<>();
 	
 	public void printUTXO() {
-	    //TODO
+		for (Entry<Input, Output> map : map.entrySet())
+            System.out.println(map.getKey() + " " + map.getValue());
+		
 	}
 	
 	public void addOutputFrom(CoinbaseTx ctx) {
@@ -24,9 +27,9 @@ public class UTXO {
     public void addAndRemoveOutputsFrom(Transaction tx) {
     	List<Input> inputs = tx.getInputs();
     	List<Output> outputs = tx.getOutputs();
-    	
     	for(Output o : outputs) {
-    		map.put(inputs.get(outputs.indexOf(o)), o);
+    		map.put(new Input(tx.getTxHash(), outputs.indexOf(o)) ,o);
+    		
     	}
     	for(Input i : inputs) {
     		map.remove(i);

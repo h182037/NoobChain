@@ -53,13 +53,36 @@ public class Transaction {
 	}
 
 	public void calculateTxHash() {
-		txHash = HashUtil.base64Encode(HashUtil.sha256Hash(inputToString() + outputToString()));
+		setTxHash(HashUtil.base64Encode(HashUtil.sha256Hash(inputToString() + outputToString())));
 	}
 	
 	public boolean isValid() {
-	    //TODO Complete validation of the transaction. Called by the Application.
-	    return true;
+		  //    Validate the regular transaction created by the "miner"'s wallet:
+        //      - All the content must be valid (not null++)!!!
+		
+        //      - All the inputs are unspent and belongs to the sender
+        //      - There are no repeating inputs!!!
+     
+		//      - All the outputs must have a value > 0
+        //      - The sum of inputs equals the sum of outputs
+        //      - The transaction is correctly signed by the sender
+        //      - The transaction hash is correct
+		boolean b = !signature.equals(null) && !txHash.equals(null) && !senderPublicKey.equals(null);
+		
+		
+		
+		for (Output o : outputs) {
+			if (o.getValue() <= 0) {
+				
+				return false;
+			}
+		}
+		if(inputs.size() != outputs.size()) {
+			return false;
+		}
+		return b;
 	}
+	
 	public String inputToString() {
 		return inputs.stream().map(Input::toString).collect(Collectors.joining("n\t\t"));
 	}
@@ -81,6 +104,12 @@ public class Transaction {
 
 	public void setSignature(byte[] signature) {
 		this.signature = signature;
+	}
+	public String getTxHash() {
+		return txHash;
+	}
+	public void setTxHash(String txHash) {
+		this.txHash = txHash;
 	}
 	
    //TODO Getters?
