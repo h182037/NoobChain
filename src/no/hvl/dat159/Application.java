@@ -2,7 +2,7 @@ package no.hvl.dat159;
 
 public class Application {
     
-    private static UTXO utxo = new UTXO();
+    public static UTXO utxo = new UTXO();
 	
 	public static void main(String[] args) throws Exception {
 	    

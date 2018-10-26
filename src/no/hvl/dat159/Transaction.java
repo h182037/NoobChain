@@ -4,6 +4,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class Transaction {
@@ -57,13 +58,19 @@ public class Transaction {
 	
 	public boolean isValid() {
 
+		long ov = 0;
 		for(Output o : outputs) {
+			ov += o.getValue();
 			if(o.getValue() < 0) {
 				return false;
 			}
 		}
+		long iv = 0;
+		for(Input i : inputs) {
+			iv += UTXO.getMap().get(i).getValue();
+		}
 		
-		return !inputs.isEmpty() && !outputs.isEmpty()
+		return !inputs.isEmpty() && !outputs.isEmpty() && iv == ov
 				&& DSAUtil.verifyWithDSA(senderPublicKey, inputToString() + outputToString(), signature);
 	}
 	

@@ -12,7 +12,7 @@ public class UTXO {
     //  When removing UTXOs, we need to identify which to remove.
     //  Since the Inputs are references to UTXOs, we can use those
     //  as keys.
-	private Map<Input, Output> map = new HashMap<>();
+	private static Map<Input, Output> map = new HashMap<>();
 	
 	public void printUTXO() {
 		for (Entry<Input, Output> map : map.entrySet())
@@ -36,7 +36,7 @@ public class UTXO {
     	}
     }
     
-    public Map<Input, Output> getMap(){
+    public static Map<Input, Output> getMap(){
     	return map;
     }
     //TODO Getters?
