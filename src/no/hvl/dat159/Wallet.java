@@ -48,13 +48,15 @@ public class Wallet {
         // 3. Choose a number of UTXO to be spent --- Strategy?
     	newTxOutputs = 0;
     	ArrayList<Input> chosenTxs = new ArrayList<Input>();
-        while(newTxOutputs < value) {
-        	myUTXO.forEach((input, output) -> {
-        		newTxOutputs += output.getValue();
-        		chosenTxs.add(input);
-        	});
-        }
-
+        
+        myUTXO.forEach((input, output) -> {
+        	if(newTxOutputs < value) {
+    		newTxOutputs += output.getValue();
+    		chosenTxs.add(input);
+        	}
+    	});
+        
+        
         // 4. Calculate change
         long change = newTxOutputs - value;
         
@@ -94,7 +96,7 @@ public class Wallet {
     	Map<Input, Output> collected = new HashMap<Input, Output>();
     	
     	for(Entry<Input, Output> o : utxoMap.entrySet()) {
-    		if(o.getValue().getAddress()==HashUtil.addressFromPublicKey(keyPair.getPublic())) {
+    		if(o.getValue().getAddress().equals(HashUtil.addressFromPublicKey(keyPair.getPublic()))) {
     			collected.put(o.getKey(), o.getValue());
     		}
     	}

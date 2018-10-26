@@ -16,12 +16,12 @@ public class UTXO {
 	
 	public void printUTXO() {
 		for (Entry<Input, Output> map : map.entrySet())
-            System.out.println(map.getKey() + " " + map.getValue());
+            System.out.println(map.getKey() + " " + map.getValue() + "\n\t" + "id: "+(map.getKey().getPrevOutputIndex()+1));
 		
 	}
 	
 	public void addOutputFrom(CoinbaseTx ctx) {
-		map.put(new Input("",-1),ctx.getOutput());
+		map.put(new Input(ctx.getTxHash(), 0),ctx.getOutput());
 	}
 
     public void addAndRemoveOutputsFrom(Transaction tx) {

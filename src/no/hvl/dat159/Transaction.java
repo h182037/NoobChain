@@ -22,7 +22,7 @@ public class Transaction {
 	private String txHash = "";
 	
 	public Transaction(PublicKey senderPublicKey) {
-		this.setSenderPublicKey(senderPublicKey);
+		setSenderPublicKey(senderPublicKey);
 	}
 	public List<Input> getInputs() {
 		return inputs;
@@ -44,8 +44,7 @@ public class Transaction {
 	
 	@Override
 	public String toString() {
-	    //TODO
-		return null;
+	    return "\t"+"hash: "+getTxHash();
 	}
 
 	public void signTxUsing(PrivateKey privateKey) {
@@ -57,30 +56,15 @@ public class Transaction {
 	}
 	
 	public boolean isValid() {
-		  //    Validate the regular transaction created by the "miner"'s wallet:
-        //      - All the content must be valid (not null++)!!!
-		
-        //      - All the inputs are unspent and belongs to the sender
-        //      - There are no repeating inputs!!!
-     
-		//      - All the outputs must have a value > 0
-        //      - The sum of inputs equals the sum of outputs
-        //      - The transaction is correctly signed by the sender
-        //      - The transaction hash is correct
-		boolean b = !signature.equals(null) && !txHash.equals(null) && !senderPublicKey.equals(null);
-		
-		
-		
-		for (Output o : outputs) {
-			if (o.getValue() <= 0) {
-				
+
+		for(Output o : outputs) {
+			if(o.getValue() < 0) {
 				return false;
 			}
 		}
-		if(inputs.size() != outputs.size()) {
-			return false;
-		}
-		return b;
+		
+		return !inputs.isEmpty() && !outputs.isEmpty()
+				&& DSAUtil.verifyWithDSA(senderPublicKey, inputToString() + outputToString(), signature);
 	}
 	
 	public String inputToString() {
